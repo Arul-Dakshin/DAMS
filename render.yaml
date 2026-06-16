@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: dams-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /swagger/index.html
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      # Recommended for production — set a strong random secret in the Render dashboard:
+      # - key: Jwt__Key
+      #   sync: false
+      # Restrict CORS to your Netlify site (otherwise any origin is allowed):
+      # - key: Cors__AllowedOrigins__0
+      #   sync: false

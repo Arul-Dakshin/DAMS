@@ -28,12 +28,17 @@ public class DashboardService : IDashboardService
         var admittedCount = await _db.Admissions.CountAsync(a => a.Status == AdmissionStatus.Admitted);
 
         var unpaidInvoiceCount = await _db.Invoices.CountAsync(i => i.Status == InvoiceStatus.Unpaid);
-        var outstanding = await _db.InvoiceItems
+        // SQLite cannot SUM decimals server-side, so pull the line amounts and total them in memory.
+        var unpaidItems = await _db.InvoiceItems
             .Where(it => it.Invoice.Status == InvoiceStatus.Unpaid)
-            .SumAsync(it => (decimal?)(it.Quantity * it.UnitPrice)) ?? 0m;
-        var paidRevenue = await _db.InvoiceItems
+            .Select(it => new { it.Quantity, it.UnitPrice })
+            .ToListAsync();
+        var outstanding = unpaidItems.Sum(x => x.Quantity * x.UnitPrice);
+        var paidItemsForTotal = await _db.InvoiceItems
             .Where(it => it.Invoice.Status == InvoiceStatus.Paid)
-            .SumAsync(it => (decimal?)(it.Quantity * it.UnitPrice)) ?? 0m;
+            .Select(it => new { it.Quantity, it.UnitPrice })
+            .ToListAsync();
+        var paidRevenue = paidItemsForTotal.Sum(x => x.Quantity * x.UnitPrice);
 
         var statusGroups = await _db.Appointments
             .GroupBy(a => a.Status)

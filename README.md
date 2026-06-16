@@ -1,17 +1,20 @@
 # DAMS — Hospital Management System
 
 A full-stack hospital management system built with **ASP.NET Core 10**, **Angular 22**, and
-**SQL Server**. It demonstrates role-based authentication, patient registration, doctor
-scheduling, and appointment booking — with OPD/IPD, prescriptions, billing, and analytics
-dashboards on the roadmap.
+**Entity Framework Core**. It features role-based authentication, patient registration, OPD/IPD
+admissions with bed management, doctor scheduling & appointment booking, prescriptions &
+diagnosis records, billing & invoicing, and an analytics dashboard with live charts.
+
+> **Runs with zero database setup** — uses a file-based SQLite database that is created and
+> seeded automatically on first run.
 
 ## Tech stack
 
 | Layer | Technology |
 |-------|-----------|
 | Backend | ASP.NET Core 10 Web API, Entity Framework Core 10 (Code-First) |
-| Frontend | Angular 22 (standalone components, signals), Bootstrap 5, Chart.js |
-| Database | SQL Server Express LocalDB |
+| Frontend | Angular 22 (standalone components, signals), Bootstrap 5, Chart.js (ng2-charts) |
+| Database | SQLite (portable; swap the EF provider for SQL Server / PostgreSQL in production) |
 | Auth | JWT bearer tokens, BCrypt password hashing, role-based authorization |
 
 ## Architecture
@@ -23,38 +26,29 @@ DAMS/
 └─ DAMS.Web/     # Angular SPA: features, core (auth/guards/interceptors), shared layout
 ```
 
-- **DAMS.Core** owns the data model (`User`, `Patient`, `Doctor`, `DoctorSchedule`,
-  `Appointment`) and `DamsDbContext`.
+- **DAMS.Core** owns the data model and `DamsDbContext`.
 - **DAMS.API** exposes REST endpoints, issues JWTs, enforces role policies, and seeds demo data.
-- **DAMS.Web** is a standalone Angular app that calls the API; a JWT interceptor attaches the
-  token and route guards enforce per-role access.
-
-## Roles
-
-`Admin` · `Doctor` · `Receptionist` · `Patient` — each sees a tailored dashboard, navigation,
-and permission set (enforced on both the API and the Angular routes).
+- **DAMS.Web** is a standalone Angular app; a JWT interceptor attaches the token and route
+  guards enforce per-role access.
 
 ## Features
 
-**Implemented (MVP)**
-- 🔐 JWT login + patient self-registration, role-based routing
-- 🧑‍⚕️ Patient registration & management (search, create, edit; patients view their own profile)
-- 👨‍⚕️ Doctor management and weekly availability scheduling
-- 📅 Appointment booking with generated time slots and double-booking prevention
-- 📋 Role-scoped appointment lists and status workflow (Booked → Completed/Cancelled/No-show)
-
-**Roadmap**
-- 🛏️ OPD/IPD admissions with ward & bed availability
-- 💊 Prescriptions & diagnosis records
-- 🧾 Billing & invoice generation
-- 📊 Dashboards: bed availability, patient stats, revenue charts
+- 🔐 **Auth & roles** — JWT login, patient self-registration, four roles (Admin / Doctor /
+  Receptionist / Patient) enforced on both API and UI
+- 🧑‍⚕️ **Patients** — registration & management; patients view their own profile
+- 👨‍⚕️ **Doctors & scheduling** — staff management and weekly availability
+- 📅 **Appointments** — slot generation, booking, double-booking prevention, status workflow
+- 🛏️ **OPD/IPD** — wards, beds, admit/discharge with live bed availability
+- 💊 **Prescriptions** — diagnosis + medicine records per appointment
+- 🧾 **Billing** — invoices with line items, mark-as-paid, printable receipts, generate-from-visit
+- 📊 **Dashboard** — KPI cards, bed-availability widget, revenue & appointment-status charts
 
 ## Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download) — `winget install Microsoft.DotNet.SDK.10`
-- SQL Server Express **LocalDB** (instance `(localdb)\MSSQLLocalDB`)
 - Node.js 20+ and Angular CLI 22 — `npm install -g @angular/cli`
-- EF Core CLI — `dotnet tool install --global dotnet-ef`
+
+*(No database server required — SQLite is file-based.)*
 
 ## Running locally
 
@@ -63,8 +57,7 @@ and permission set (enforced on both the API and the Angular routes).
 cd DAMS.API
 dotnet run
 ```
-The database is created and seeded automatically on first run (migrations are applied at
-startup).
+The SQLite database (`dams.db`) is created, migrated, and seeded automatically on first run.
 
 **Frontend** (http://localhost:4200)
 ```bash
@@ -82,28 +75,22 @@ ng serve
 | Receptionist | `reception@dams.com` | `Reception@123` |
 | Patient | `patient@dams.com` | `Patient@123` |
 
-The seeded doctor (Dr. Alice Carter, General Medicine) has a Mon–Fri 09:00–13:00 schedule with
-30-minute slots, and one patient (John Miller) is pre-registered.
+The login page has one-click buttons to fill these in. A seeded doctor (Dr. Alice Carter) has a
+Mon–Fri schedule, one patient is pre-registered, and two wards with beds are set up.
 
-## Key API endpoints
+## Deployment (free)
 
-| Method | Route | Roles |
-|--------|-------|-------|
-| POST | `/api/auth/login`, `/api/auth/register` | Public |
-| GET/POST/PUT | `/api/patients` | Staff (create/edit: Admin, Receptionist) |
-| GET | `/api/patients/me` | Patient |
-| GET/POST/PUT/DELETE | `/api/doctors` | View: all · Manage: Admin |
-| GET/POST/DELETE | `/api/doctors/{id}/schedules` | Admin, Doctor |
-| GET | `/api/doctors/{id}/slots?date=yyyy-MM-dd` | Authenticated |
-| GET/POST | `/api/appointments` | Book: Admin, Receptionist, Patient |
-| PUT | `/api/appointments/{id}/status` | Staff |
+- **Frontend → Netlify** — `netlify.toml` is included (base `DAMS.Web`, publish
+  `dist/DAMS.Web/browser`, SPA redirect). Set `environment.prod.ts` `apiUrl` to your API URL.
+- **API → Render** — a `Dockerfile` and `render.yaml` blueprint are included; the app honors
+  Render's `PORT`. Optionally set `Jwt__Key` (strong secret) and `Cors__AllowedOrigins__0`
+  (your Netlify URL) as environment variables.
 
-## Database
+## Notes
 
-EF Core Code-First. Inspect the data in SSMS by connecting to `(localdb)\MSSQLLocalDB` and
-opening the `DamsDb` database. To add a migration after model changes:
-
-```powershell
-dotnet ef migrations add <Name> --project DAMS.Core --startup-project DAMS.API
-dotnet ef database update --project DAMS.Core --startup-project DAMS.API
-```
+- EF Core Code-First; migrations apply automatically at startup. Add a migration with:
+  ```powershell
+  dotnet ef migrations add <Name> --project DAMS.Core --startup-project DAMS.API
+  ```
+- For production, override the JWT signing key and restrict CORS via environment variables, and
+  consider switching the EF provider to SQL Server or PostgreSQL.

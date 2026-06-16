@@ -10,6 +10,11 @@ appsettings.*.local.json
 *.mdf
 *.ldf
 
+# ---- SQLite ----
+*.db
+*.db-shm
+*.db-wal
+
 # ---- Node / Angular ----
 node_modules/
 dist/
