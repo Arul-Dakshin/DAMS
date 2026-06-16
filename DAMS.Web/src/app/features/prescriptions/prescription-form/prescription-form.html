@@ -1,0 +1,83 @@
+<div class="d-flex align-items-center mb-3">
+  <a class="btn btn-sm btn-outline-secondary me-3" routerLink="/prescriptions"><i class="bi bi-arrow-left"></i></a>
+  <h4 class="fw-bold mb-0">Write prescription</h4>
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+
+<div class="card border-0 shadow-sm" style="max-width: 900px;">
+  <div class="card-body p-4">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="row g-3 mb-3">
+        <div class="col-md-7">
+          <label class="form-label">Appointment <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="appointmentId">
+            <option [value]="0" disabled>Select one of your appointments…</option>
+            @for (a of appointments(); track a.id) {
+              <option [value]="a.id">{{ a.patientName }} — {{ a.scheduledStart | date: 'short' }} ({{ a.status }})</option>
+            }
+          </select>
+          @if (form.controls.appointmentId.touched && form.controls.appointmentId.invalid) {
+            <div class="text-danger small mt-1">Please select an appointment.</div>
+          }
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Diagnosis <span class="text-danger">*</span></label>
+        <textarea class="form-control" rows="2" formControlName="diagnosis" placeholder="Clinical diagnosis…"></textarea>
+        @if (form.controls.diagnosis.touched && form.controls.diagnosis.invalid) {
+          <div class="text-danger small mt-1">Diagnosis is required.</div>
+        }
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+        <h6 class="fw-bold mb-0">Medicines</h6>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addItem()">
+          <i class="bi bi-plus-lg me-1"></i>Add medicine
+        </button>
+      </div>
+
+      <div formArrayName="items">
+        @for (item of items.controls; track $index; let i = $index) {
+          <div class="row g-2 align-items-end mb-2 pb-2 border-bottom" [formGroupName]="i">
+            <div class="col-md-3">
+              <label class="form-label small">Medicine <span class="text-danger">*</span></label>
+              <input class="form-control" formControlName="medicineName" placeholder="e.g. Paracetamol" />
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Dosage <span class="text-danger">*</span></label>
+              <input class="form-control" formControlName="dosage" placeholder="500 mg" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small">Frequency <span class="text-danger">*</span></label>
+              <input class="form-control" formControlName="frequency" placeholder="Twice daily" />
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Days <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" formControlName="durationDays" min="1" />
+            </div>
+            <div class="col-md-2 d-flex gap-1">
+              <input class="form-control" formControlName="instructions" placeholder="After meals" />
+              <button type="button" class="btn btn-outline-danger" (click)="removeItem(i)" [disabled]="items.length === 1" title="Remove">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="mb-3 mt-3">
+        <label class="form-label">Notes / advice</label>
+        <textarea class="form-control" rows="2" formControlName="notes" placeholder="Rest, hydration, follow-up…"></textarea>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save prescription' }}
+        </button>
+        <a class="btn btn-outline-secondary" routerLink="/prescriptions">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>

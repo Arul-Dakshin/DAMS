@@ -1,0 +1,42 @@
+.bed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.bed-num {
+  white-space: nowrap;
+}
+
+.bed-actions {
+  display: inline-flex;
+  gap: 0.3rem;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.bed-actions i:hover {
+  opacity: 1;
+}
+
+.bed-available {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border-color: #badbcc;
+}
+
+.bed-occupied {
+  background-color: #f8d7da;
+  color: #842029;
+  border-color: #f5c2c7;
+}
+
+.bed-maintenance {
+  background-color: #e2e3e5;
+  color: #41464b;
+  border-color: #d3d6d8;
+}

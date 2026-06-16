@@ -28,3 +28,23 @@ public enum AppointmentType
     OPD,
     IPD
 }
+
+public enum BedStatus
+{
+    Available,
+    Occupied,
+    Maintenance
+}
+
+public enum AdmissionStatus
+{
+    Admitted,
+    Discharged
+}
+
+public enum InvoiceStatus
+{
+    Unpaid,
+    Paid,
+    Cancelled
+}

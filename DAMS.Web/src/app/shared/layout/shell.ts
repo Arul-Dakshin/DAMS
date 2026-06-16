@@ -29,6 +29,10 @@ export class Shell {
     { label: 'Patients', icon: 'bi-people', route: '/patients', roles: ['Admin', 'Doctor', 'Receptionist'] },
     { label: 'Doctors', icon: 'bi-person-badge', route: '/doctors', roles: ['Admin', 'Doctor', 'Receptionist'] },
     { label: 'Appointments', icon: 'bi-calendar-check', route: '/appointments', roles: ['Admin', 'Doctor', 'Receptionist', 'Patient'] },
+    { label: 'Beds', icon: 'bi-hospital', route: '/beds', roles: ['Admin', 'Doctor', 'Receptionist'] },
+    { label: 'Admissions', icon: 'bi-clipboard2-pulse', route: '/admissions', roles: ['Admin', 'Doctor', 'Receptionist'] },
+    { label: 'Prescriptions', icon: 'bi-file-medical', route: '/prescriptions', roles: ['Admin', 'Doctor', 'Patient'] },
+    { label: 'Billing', icon: 'bi-receipt', route: '/invoices', roles: ['Admin', 'Receptionist', 'Patient'] },
     { label: 'My Profile', icon: 'bi-person-vcard', route: '/my-profile', roles: ['Patient'] }
   ];
 

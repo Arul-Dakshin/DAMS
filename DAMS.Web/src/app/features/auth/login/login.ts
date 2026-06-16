@@ -21,6 +21,7 @@ export class Login {
     password: ['', [Validators.required]]
   });
 
+  // Demo accounts let evaluators try each role with one click.
   readonly demoAccounts = [
     { role: 'Admin', email: 'admin@dams.com', password: 'Admin@123' },
     { role: 'Doctor', email: 'doctor@dams.com', password: 'Doctor@123' },

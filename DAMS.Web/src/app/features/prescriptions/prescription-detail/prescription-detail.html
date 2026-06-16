@@ -1,0 +1,80 @@
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div class="d-flex align-items-center">
+    <a class="btn btn-sm btn-outline-secondary me-3" routerLink="/prescriptions"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="fw-bold mb-0">Prescription</h4>
+  </div>
+  @if (prescription()) {
+    <button class="btn btn-outline-primary" (click)="print()"><i class="bi bi-printer me-1"></i>Print</button>
+  }
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+
+@if (loading()) {
+  <p class="text-muted">Loading…</p>
+} @else if (prescription(); as p) {
+  <div class="card border-0 shadow-sm" style="max-width: 820px;">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between border-bottom pb-3 mb-3">
+        <div>
+          <div class="brand-badge mb-2" style="width:44px;height:44px;font-size:1.2rem;"><i class="bi bi-hospital"></i></div>
+          <h5 class="fw-bold mb-0">DAMS</h5>
+          <small class="text-muted">Hospital Management System</small>
+        </div>
+        <div class="text-end">
+          <div><span class="text-muted small">Issued:</span> {{ p.createdAt | date: 'medium' }}</div>
+          <div><span class="text-muted small">Visit:</span> {{ p.appointmentDate | date: 'medium' }}</div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-sm-6">
+          <div class="text-muted small">Patient</div>
+          <div class="fw-semibold">{{ p.patientName }}</div>
+        </div>
+        <div class="col-sm-6">
+          <div class="text-muted small">Prescribed by</div>
+          <div class="fw-semibold">{{ p.doctorName }}</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <div class="text-muted small">Diagnosis</div>
+        <div>{{ p.diagnosis }}</div>
+      </div>
+
+      <h6 class="fw-bold mt-4 mb-2"><i class="bi bi-capsule me-1"></i>Medicines</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Medicine</th>
+              <th>Dosage</th>
+              <th>Frequency</th>
+              <th>Duration</th>
+              <th>Instructions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of p.items; track item.id) {
+              <tr>
+                <td class="fw-medium">{{ item.medicineName }}</td>
+                <td>{{ item.dosage }}</td>
+                <td>{{ item.frequency }}</td>
+                <td>{{ item.durationDays }} day(s)</td>
+                <td>{{ item.instructions || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (p.notes) {
+        <div class="mt-3">
+          <div class="text-muted small">Notes / advice</div>
+          <div>{{ p.notes }}</div>
+        </div>
+      }
+    </div>
+  </div>
+}

@@ -69,6 +69,51 @@ export const routes: Routes = [
         canActivate: [roleGuard('Admin', 'Receptionist', 'Patient')],
         loadComponent: () => import('./features/appointments/appointment-booking/appointment-booking').then((m) => m.AppointmentBooking)
       },
+      {
+        path: 'beds',
+        canActivate: [roleGuard('Admin', 'Doctor', 'Receptionist')],
+        loadComponent: () => import('./features/beds/bed-availability/bed-availability').then((m) => m.BedAvailability)
+      },
+      {
+        path: 'admissions',
+        canActivate: [roleGuard('Admin', 'Doctor', 'Receptionist')],
+        loadComponent: () => import('./features/admissions/admission-list/admission-list').then((m) => m.AdmissionList)
+      },
+      {
+        path: 'admissions/admit',
+        canActivate: [roleGuard('Admin', 'Doctor', 'Receptionist')],
+        loadComponent: () => import('./features/admissions/admit-form/admit-form').then((m) => m.AdmitForm)
+      },
+      {
+        path: 'prescriptions',
+        canActivate: [roleGuard('Admin', 'Doctor', 'Patient')],
+        loadComponent: () => import('./features/prescriptions/prescription-list/prescription-list').then((m) => m.PrescriptionList)
+      },
+      {
+        path: 'prescriptions/new',
+        canActivate: [roleGuard('Doctor')],
+        loadComponent: () => import('./features/prescriptions/prescription-form/prescription-form').then((m) => m.PrescriptionForm)
+      },
+      {
+        path: 'prescriptions/:id',
+        canActivate: [roleGuard('Admin', 'Doctor', 'Patient')],
+        loadComponent: () => import('./features/prescriptions/prescription-detail/prescription-detail').then((m) => m.PrescriptionDetail)
+      },
+      {
+        path: 'invoices',
+        canActivate: [roleGuard('Admin', 'Receptionist', 'Patient')],
+        loadComponent: () => import('./features/invoices/invoice-list/invoice-list').then((m) => m.InvoiceList)
+      },
+      {
+        path: 'invoices/new',
+        canActivate: [roleGuard('Admin', 'Receptionist')],
+        loadComponent: () => import('./features/invoices/invoice-form/invoice-form').then((m) => m.InvoiceForm)
+      },
+      {
+        path: 'invoices/:id',
+        canActivate: [roleGuard('Admin', 'Receptionist', 'Patient')],
+        loadComponent: () => import('./features/invoices/invoice-detail/invoice-detail').then((m) => m.InvoiceDetail)
+      },
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' }
     ]
   },

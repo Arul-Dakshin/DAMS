@@ -1,0 +1,105 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="fw-bold mb-0">Bed availability</h4>
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+
+<!-- Summary -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card border-0 shadow-sm"><div class="card-body">
+      <div class="text-muted small">Total beds</div>
+      <div class="h4 fw-bold mb-0">{{ totals().total }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card border-0 shadow-sm"><div class="card-body">
+      <div class="text-muted small">Available</div>
+      <div class="h4 fw-bold mb-0 text-success">{{ totals().available }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card border-0 shadow-sm"><div class="card-body">
+      <div class="text-muted small">Occupied</div>
+      <div class="h4 fw-bold mb-0 text-danger">{{ totals().occupied }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card border-0 shadow-sm"><div class="card-body">
+      <div class="text-muted small">Maintenance</div>
+      <div class="h4 fw-bold mb-0 text-secondary">{{ totals().maintenance }}</div>
+    </div></div>
+  </div>
+</div>
+
+@if (isAdmin) {
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <h6 class="fw-bold mb-3">Add ward</h6>
+      <div class="row g-2 align-items-end">
+        <div class="col-md-5">
+          <label class="form-label small">Ward name</label>
+          <input class="form-control" [(ngModel)]="newWardName" placeholder="e.g. General Ward B" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Category</label>
+          <input class="form-control" [(ngModel)]="newWardCategory" placeholder="e.g. General, ICU, Private" />
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-primary w-100" (click)="addWard()"><i class="bi bi-plus-lg me-1"></i>Add ward</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (loading()) {
+  <p class="text-muted">Loading…</p>
+} @else if (wards().length === 0) {
+  <p class="text-muted">No wards yet.</p>
+} @else {
+  <div class="row g-3">
+    @for (w of wards(); track w.id) {
+      <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h6 class="fw-bold mb-0">{{ w.name }}</h6>
+                @if (w.category) { <span class="badge bg-primary-subtle text-primary">{{ w.category }}</span> }
+              </div>
+              <div class="text-end">
+                <div class="small text-muted">{{ w.availableBeds }} / {{ w.totalBeds }} free</div>
+                @if (isAdmin) {
+                  <button class="btn btn-sm btn-link text-danger p-0" (click)="deleteWard(w)">delete ward</button>
+                }
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+              @for (b of w.beds; track b.id) {
+                <div class="bed-chip {{ bedClass(b.status) }}" [title]="b.status">
+                  <span class="bed-num">{{ b.bedNumber }}</span>
+                  @if (isAdmin && b.status !== 'Occupied') {
+                    <span class="bed-actions">
+                      <i class="bi bi-wrench" title="Toggle maintenance" (click)="toggleMaintenance(b)"></i>
+                      <i class="bi bi-x-circle" title="Delete bed" (click)="deleteBed(w, b)"></i>
+                    </span>
+                  }
+                </div>
+              }
+              @if (w.beds.length === 0) { <span class="text-muted small">No beds.</span> }
+            </div>
+
+            @if (isAdmin) {
+              <div class="input-group input-group-sm mt-3" style="max-width: 260px;">
+                <input class="form-control" [(ngModel)]="newBedNumber[w.id]" placeholder="New bed no. e.g. G-106" />
+                <button class="btn btn-outline-primary" (click)="addBed(w)">Add bed</button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

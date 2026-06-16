@@ -46,6 +46,17 @@
               <td><span class="badge {{ badgeClass(a.status) }}">{{ a.status }}</span></td>
               @if (canManage) {
                 <td class="text-end">
+                  @if (isDoctor && a.status !== 'Cancelled' && a.status !== 'NoShow') {
+                    <a class="btn btn-sm btn-outline-info me-1" routerLink="/prescriptions/new"
+                       [queryParams]="{ appointmentId: a.id }" title="Write prescription">
+                      <i class="bi bi-file-medical"></i>
+                    </a>
+                  }
+                  @if (canBill && a.status !== 'Cancelled' && a.status !== 'NoShow') {
+                    <button class="btn btn-sm btn-outline-warning me-1" (click)="bill(a)" title="Generate invoice">
+                      <i class="bi bi-receipt"></i>
+                    </button>
+                  }
                   @if (a.status === 'Booked') {
                     <button class="btn btn-sm btn-outline-success me-1" (click)="setStatus(a, 'Completed')" title="Mark completed">
                       <i class="bi bi-check-lg"></i>
@@ -56,8 +67,6 @@
                     <button class="btn btn-sm btn-outline-danger" (click)="setStatus(a, 'NoShow')" title="No-show">
                       <i class="bi bi-person-dash"></i>
                     </button>
-                  } @else {
-                    <span class="text-muted">—</span>
                   }
                 </td>
               }

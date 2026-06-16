@@ -9,9 +9,33 @@ public static class DbSeeder
 {
     public static async Task SeedAsync(DamsDbContext db)
     {
-        // Apply any pending migrations, then seed demo data once.
+        // Apply any pending migrations, then seed demo data (each block guarded independently
+        // so new seed data lands even on a database that already has earlier seeds).
         await db.Database.MigrateAsync();
 
+        await SeedCoreAsync(db);
+        await SeedWardsAsync(db);
+    }
+
+    private static async Task SeedWardsAsync(DamsDbContext db)
+    {
+        if (await db.Wards.AnyAsync())
+            return;
+
+        var general = new Ward { Name = "General Ward A", Category = "General" };
+        var icu = new Ward { Name = "ICU", Category = "ICU" };
+        db.Wards.AddRange(general, icu);
+        await db.SaveChangesAsync();
+
+        foreach (var n in new[] { "G-101", "G-102", "G-103", "G-104", "G-105" })
+            db.Beds.Add(new Bed { WardId = general.Id, BedNumber = n, Status = BedStatus.Available });
+        foreach (var n in new[] { "ICU-1", "ICU-2", "ICU-3" })
+            db.Beds.Add(new Bed { WardId = icu.Id, BedNumber = n, Status = BedStatus.Available });
+        await db.SaveChangesAsync();
+    }
+
+    private static async Task SeedCoreAsync(DamsDbContext db)
+    {
         if (await db.Users.AnyAsync())
             return;
 

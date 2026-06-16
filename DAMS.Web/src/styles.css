@@ -35,3 +35,40 @@ body {
   font-size: 1.4rem;
   flex-shrink: 0;
 }
+
+/* Print: show only the document being printed (e.g. an invoice), not the app chrome */
+@media print {
+  @page {
+    margin: 1.2cm;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  /* Hide the navbar, sidebar and any on-screen-only controls */
+  .navbar,
+  .sidebar,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Collapse the app shell layout so the printed content starts at the top, full width */
+  .shell-body {
+    padding-top: 0 !important;
+    display: block !important;
+  }
+
+  .content {
+    padding: 0 !important;
+    background: #fff !important;
+    min-height: auto !important;
+  }
+
+  /* Flatten cards for a clean paper look and let them use the full page width */
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #dee2e6 !important;
+    max-width: 100% !important;
+  }
+}
