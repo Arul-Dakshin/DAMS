@@ -1,0 +1,32 @@
+<nav class="navbar navbar-dark bg-primary px-3 fixed-top shadow-sm">
+  <span class="navbar-brand fw-bold mb-0"><i class="bi bi-hospital me-2"></i>DAMS</span>
+  <div class="dropdown">
+    <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-person-circle me-1"></i>{{ user()?.fullName }}
+      <span class="badge bg-secondary ms-1">{{ role() }}</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><span class="dropdown-item-text small text-muted">{{ user()?.email }}</span></li>
+      <li><hr class="dropdown-divider" /></li>
+      <li><button class="dropdown-item" (click)="logout()"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="shell-body">
+  <aside class="sidebar bg-white border-end">
+    <ul class="nav flex-column p-2">
+      @for (item of navItems(); track item.route) {
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" [routerLink]="item.route" routerLinkActive="active">
+            <i class="bi {{ item.icon }} me-2"></i>{{ item.label }}
+          </a>
+        </li>
+      }
+    </ul>
+  </aside>
+
+  <main class="content p-4">
+    <router-outlet />
+  </main>
+</div>

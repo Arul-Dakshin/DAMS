@@ -1,0 +1,82 @@
+<div class="d-flex align-items-center mb-3">
+  <a class="btn btn-sm btn-outline-secondary me-3" routerLink="/appointments"><i class="bi bi-arrow-left"></i></a>
+  <h4 class="fw-bold mb-0">Book appointment</h4>
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+
+<div class="card border-0 shadow-sm" style="max-width: 760px;">
+  <div class="card-body p-4">
+    <form [formGroup]="form" (ngSubmit)="book()">
+      <div class="row g-3">
+        @if (!isPatient) {
+          <div class="col-md-6">
+            <label class="form-label">Patient <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="patientId">
+              <option [value]="0" disabled>Select patient…</option>
+              @for (p of patients(); track p.id) {
+                <option [value]="p.id">{{ p.fullName }} ({{ p.phone }})</option>
+              }
+            </select>
+          </div>
+        }
+        <div class="col-md-6">
+          <label class="form-label">Doctor <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="doctorId" (change)="onCriteriaChange()">
+            <option [value]="0" disabled>Select doctor…</option>
+            @for (d of doctors(); track d.id) {
+              <option [value]="d.id">{{ d.fullName }} — {{ d.specialization }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Date <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" formControlName="date" [min]="today" (change)="onCriteriaChange()" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Type</label>
+          <select class="form-select" formControlName="type">
+            <option value="OPD">OPD (Out-patient)</option>
+            <option value="IPD">IPD (In-patient)</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Reason</label>
+          <input type="text" class="form-control" formControlName="reason" placeholder="e.g. Fever, follow-up…" />
+        </div>
+      </div>
+
+      <hr class="my-4" />
+
+      <h6 class="fw-bold mb-2">Available slots</h6>
+      @if (loadingSlots()) {
+        <p class="text-muted">Loading slots…</p>
+      } @else if (form.controls.doctorId.value > 0 && form.controls.date.value) {
+        @if (slots().length === 0) {
+          <p class="text-muted">No free slots for this doctor on the selected date.</p>
+        } @else {
+          <div class="d-flex flex-wrap gap-2">
+            @for (s of slots(); track s.start) {
+              <button type="button"
+                      class="btn btn-sm"
+                      [class.btn-primary]="selectedSlot() === s.start"
+                      [class.btn-outline-primary]="selectedSlot() !== s.start"
+                      (click)="pickSlot(s)">
+                {{ s.start | date: 'shortTime' }}
+              </button>
+            }
+          </div>
+        }
+      } @else {
+        <p class="text-muted">Select a doctor and date to see available slots.</p>
+      }
+
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-success" [disabled]="saving() || !canSubmit()">
+          {{ saving() ? 'Booking…' : 'Confirm booking' }}
+        </button>
+        <a class="btn btn-outline-secondary" routerLink="/appointments">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>

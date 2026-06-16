@@ -1,0 +1,59 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0">Doctors</h4>
+    <small class="text-muted">{{ doctors().length }} doctor(s)</small>
+  </div>
+  @if (isAdmin) {
+    <a class="btn btn-primary" routerLink="/doctors/new">
+      <i class="bi bi-plus-lg me-1"></i>Add doctor
+    </a>
+  }
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Specialization</th>
+          <th>Phone</th>
+          <th>Consultation fee</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          <tr><td colspan="6" class="text-center text-muted py-4">Loading…</td></tr>
+        } @else if (doctors().length === 0) {
+          <tr><td colspan="6" class="text-center text-muted py-4">No doctors found.</td></tr>
+        } @else {
+          @for (d of doctors(); track d.id) {
+            <tr>
+              <td>{{ d.id }}</td>
+              <td class="fw-medium">{{ d.fullName }}</td>
+              <td><span class="badge bg-primary-subtle text-primary">{{ d.specialization }}</span></td>
+              <td>{{ d.phone || '—' }}</td>
+              <td>{{ d.consultationFee | currency: 'INR' }}</td>
+              <td class="text-end">
+                @if (canEditSchedules) {
+                  <a class="btn btn-sm btn-outline-secondary me-1" [routerLink]="['/doctors', d.id, 'schedules']">
+                    <i class="bi bi-calendar-week"></i> Schedule
+                  </a>
+                }
+                @if (isAdmin) {
+                  <a class="btn btn-sm btn-outline-primary" [routerLink]="['/doctors', d.id, 'edit']">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                }
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

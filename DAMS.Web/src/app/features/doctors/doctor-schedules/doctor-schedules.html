@@ -1,0 +1,75 @@
+<div class="d-flex align-items-center mb-3">
+  <a class="btn btn-sm btn-outline-secondary me-3" routerLink="/doctors"><i class="bi bi-arrow-left"></i></a>
+  <div>
+    <h4 class="fw-bold mb-0">Weekly schedule</h4>
+    <small class="text-muted">{{ doctor()?.fullName }} — {{ doctor()?.specialization }}</small>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr><th>Day</th><th>Hours</th><th>Slot</th><th class="text-end">Actions</th></tr>
+          </thead>
+          <tbody>
+            @if (loading()) {
+              <tr><td colspan="4" class="text-center text-muted py-4">Loading…</td></tr>
+            } @else if (schedules().length === 0) {
+              <tr><td colspan="4" class="text-center text-muted py-4">No schedule set yet.</td></tr>
+            } @else {
+              @for (s of schedules(); track s.id) {
+                <tr>
+                  <td class="fw-medium">{{ s.dayOfWeek }}</td>
+                  <td>{{ s.startTime.slice(0,5) }} – {{ s.endTime.slice(0,5) }}</td>
+                  <td>{{ s.slotMinutes }} min</td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-outline-danger" (click)="remove(s.id)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4">
+        <h6 class="fw-bold mb-3">Add availability</h6>
+        @if (error()) { <div class="alert alert-danger py-2">{{ error() }}</div> }
+        <form [formGroup]="form" (ngSubmit)="add()">
+          <div class="mb-3">
+            <label class="form-label">Day of week</label>
+            <select class="form-select" formControlName="dayOfWeek">
+              @for (d of days; track d) { <option [value]="d">{{ d }}</option> }
+            </select>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col">
+              <label class="form-label">Start</label>
+              <input type="time" class="form-control" formControlName="startTime" />
+            </div>
+            <div class="col">
+              <label class="form-label">End</label>
+              <input type="time" class="form-control" formControlName="endTime" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Slot length (minutes)</label>
+            <input type="number" class="form-control" formControlName="slotMinutes" min="5" step="5" />
+          </div>
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-plus-lg me-1"></i>Add
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

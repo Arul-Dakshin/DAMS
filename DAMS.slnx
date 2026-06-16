@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DAMS.API/DAMS.API.csproj" />
+  <Project Path="DAMS.Core/DAMS.Core.csproj" />
+</Solution>

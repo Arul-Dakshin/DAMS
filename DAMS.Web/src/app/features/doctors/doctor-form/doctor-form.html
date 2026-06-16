@@ -1,0 +1,47 @@
+<div class="d-flex align-items-center mb-3">
+  <a class="btn btn-sm btn-outline-secondary me-3" routerLink="/doctors"><i class="bi bi-arrow-left"></i></a>
+  <h4 class="fw-bold mb-0">{{ isEdit() ? 'Edit doctor' : 'Add doctor' }}</h4>
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+
+<div class="card border-0 shadow-sm" style="max-width: 640px;">
+  <div class="card-body p-4">
+    @if (loading()) {
+      <p class="text-muted mb-0">Loading…</p>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Full name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="fullName" />
+            @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+              <div class="text-danger small mt-1">Full name is required.</div>
+            }
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Specialization <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="specialization" placeholder="e.g. Cardiology" />
+            @if (form.controls.specialization.touched && form.controls.specialization.invalid) {
+              <div class="text-danger small mt-1">Specialization is required.</div>
+            }
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Phone</label>
+            <input type="text" class="form-control" formControlName="phone" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Consultation fee <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" formControlName="consultationFee" min="0" step="50" />
+          </div>
+        </div>
+        <div class="mt-4 d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">
+            {{ saving() ? 'Saving…' : (isEdit() ? 'Save changes' : 'Add doctor') }}
+          </button>
+          <a class="btn btn-outline-secondary" routerLink="/doctors">Cancel</a>
+        </div>
+      </form>
+    }
+  </div>
+</div>

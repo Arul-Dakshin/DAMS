@@ -1,0 +1,24 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">{{ greeting() }}, {{ user()?.fullName }}</h3>
+  <p class="text-muted mb-0">
+    You are signed in as <span class="badge bg-primary">{{ role() }}</span>
+  </p>
+</div>
+
+<div class="row g-3">
+  @for (card of cards(); track card.title) {
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center">
+          <div class="feature-icon text-{{ card.color }} me-3">
+            <i class="bi {{ card.icon }}"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold mb-1">{{ card.title }}</h6>
+            <small class="text-muted">{{ card.description }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
