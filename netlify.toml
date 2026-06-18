@@ -1,9 +1,10 @@
 [build]
-  base = "DAMS.Web"
-  command = "npm ci && npm run build"
-  publish = "dist/DAMS.Web/browser"
+  command = "cd DAMS.Web && npm install && npm run build"
+  publish = "DAMS.Web/dist/DAMS.Web/browser"
 
-# SPA fallback (also covered by public/_redirects)
+[build.environment]
+  NODE_VERSION = "22"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
