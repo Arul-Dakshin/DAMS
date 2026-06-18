@@ -89,15 +89,15 @@ builder.Services.AddCors(options =>
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         }
-        else if (corsOrigins.Length > 0)
-        {
-            policy.WithOrigins(corsOrigins).AllowAnyHeader().AllowAnyMethod();
-        }
         else
         {
-            // No origins configured yet (e.g. before the deployed site URL is known) — allow any so the
-            // demo works out of the box. Lock it down by setting Cors__AllowedOrigins__0 to your site URL.
-            policy.SetIsOriginAllowed(_ => true).AllowAnyHeader().AllowAnyMethod();
+            // Production: allow the explicitly configured origins plus any Netlify deploy
+            // (*.netlify.app), so the hosted frontend works regardless of its exact subdomain.
+            policy.SetIsOriginAllowed(origin =>
+                      corsOrigins.Contains(origin) ||
+                      (Uri.TryCreate(origin, UriKind.Absolute, out var uri) && uri.Host.EndsWith(".netlify.app")))
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
         }
     });
 });
