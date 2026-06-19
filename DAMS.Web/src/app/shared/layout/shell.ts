@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { Role } from '../../core/models/auth.models';
@@ -22,6 +22,15 @@ export class Shell {
 
   readonly user = this.auth.user;
   readonly role = this.auth.role;
+  readonly sidebarOpen = signal(false);
+
+  toggleSidebar(): void {
+    this.sidebarOpen.update((v) => !v);
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
+  }
 
   // Nav items are role-filtered; new feature links are appended in later phases.
   private readonly allNav: NavItem[] = [

@@ -1,8 +1,14 @@
-<nav class="navbar navbar-dark bg-primary px-3 fixed-top shadow-sm">
-  <span class="navbar-brand fw-bold mb-0"><i class="bi bi-hospital me-2"></i>DAMS</span>
+<nav class="navbar navbar-dark bg-primary px-2 px-sm-3 fixed-top shadow-sm">
+  <div class="d-flex align-items-center">
+    <button class="btn btn-sm btn-primary border-0 d-lg-none me-1" (click)="toggleSidebar()" aria-label="Toggle menu">
+      <i class="bi bi-list fs-5"></i>
+    </button>
+    <span class="navbar-brand fw-bold mb-0"><i class="bi bi-hospital me-2"></i>DAMS</span>
+  </div>
   <div class="dropdown">
     <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-person-circle me-1"></i>{{ user()?.fullName }}
+      <i class="bi bi-person-circle me-1"></i>
+      <span class="d-none d-sm-inline">{{ user()?.fullName }}</span>
       <span class="badge bg-secondary ms-1">{{ role() }}</span>
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
@@ -14,11 +20,12 @@
 </nav>
 
 <div class="shell-body">
-  <aside class="sidebar bg-white border-end">
+  <aside class="sidebar bg-white border-end" [class.open]="sidebarOpen()">
     <ul class="nav flex-column p-2">
       @for (item of navItems(); track item.route) {
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center" [routerLink]="item.route" routerLinkActive="active">
+          <a class="nav-link d-flex align-items-center" [routerLink]="item.route"
+             routerLinkActive="active" (click)="closeSidebar()">
             <i class="bi {{ item.icon }} me-2"></i>{{ item.label }}
           </a>
         </li>
@@ -26,7 +33,9 @@
     </ul>
   </aside>
 
-  <main class="content p-4">
+  <div class="sidebar-backdrop" [class.show]="sidebarOpen()" (click)="closeSidebar()"></div>
+
+  <main class="content p-3 p-lg-4">
     <router-outlet />
   </main>
 </div>
