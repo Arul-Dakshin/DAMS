@@ -1,36 +1,32 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div>
-    <h4 class="fw-bold mb-0">Appointments</h4>
-    <small class="text-muted">{{ appointments().length }} appointment(s)</small>
-  </div>
+<app-page-header title="Appointments" [subtitle]="appointments().length + ' appointment(s)'">
   @if (canBook) {
     <a class="btn btn-primary" routerLink="/appointments/book">
       <i class="bi bi-calendar-plus me-1"></i>Book appointment
     </a>
   }
-</div>
+</app-page-header>
 
 @if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
 
-<div class="card border-0 shadow-sm">
-  <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>When</th>
-          <th>Patient</th>
-          <th>Doctor</th>
-          <th>Type</th>
-          <th>Status</th>
-          @if (canManage) { <th class="text-end">Actions</th> }
-        </tr>
-      </thead>
-      <tbody>
-        @if (loading()) {
-          <tr><td colspan="6" class="text-center text-muted py-4">Loading…</td></tr>
-        } @else if (appointments().length === 0) {
-          <tr><td colspan="6" class="text-center text-muted py-4">No appointments yet.</td></tr>
-        } @else {
+@if (loading()) {
+  <app-loading-spinner message="Loading appointments…" />
+} @else if (appointments().length === 0) {
+  <app-empty-state icon="bi-calendar-check" message="No appointments yet." />
+} @else {
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>When</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Type</th>
+            <th>Status</th>
+            @if (canManage) { <th class="text-end">Actions</th> }
+          </tr>
+        </thead>
+        <tbody>
           @for (a of appointments(); track a.id) {
             <tr>
               <td>
@@ -43,7 +39,7 @@
                 <small class="text-muted">{{ a.specialization }}</small>
               </td>
               <td><span class="badge bg-info-subtle text-info-emphasis">{{ a.type }}</span></td>
-              <td><span class="badge {{ badgeClass(a.status) }}">{{ a.status }}</span></td>
+              <td><app-status-badge [status]="a.status" /></td>
               @if (canManage) {
                 <td class="text-end">
                   @if (isDoctor && a.status !== 'Cancelled' && a.status !== 'NoShow') {
@@ -72,8 +68,8 @@
               }
             </tr>
           }
-        }
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+}

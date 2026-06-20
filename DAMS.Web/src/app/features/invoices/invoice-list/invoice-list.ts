@@ -3,11 +3,12 @@ import { RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { InvoiceService } from '../../../core/services/invoice.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Invoice, InvoiceStatus } from '../../../core/models/invoice.model';
+import { Invoice } from '../../../core/models/invoice.model';
+import { EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../shared/ui';
 
 @Component({
   selector: 'app-invoice-list',
-  imports: [RouterLink, CurrencyPipe, DatePipe],
+  imports: [RouterLink, CurrencyPipe, DatePipe, PageHeader, LoadingSpinner, EmptyState, StatusBadge],
   templateUrl: './invoice-list.html'
 })
 export class InvoiceList {
@@ -39,14 +40,5 @@ export class InvoiceList {
         this.loading.set(false);
       }
     });
-  }
-
-  badge(status: InvoiceStatus): string {
-    const map: Record<InvoiceStatus, string> = {
-      Unpaid: 'bg-warning text-dark',
-      Paid: 'bg-success',
-      Cancelled: 'bg-secondary'
-    };
-    return map[status];
   }
 }

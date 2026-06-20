@@ -5,10 +5,11 @@ import { DatePipe } from '@angular/common';
 import { PatientService } from '../../../core/services/patient.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Patient } from '../../../core/models/patient.model';
+import { EmptyState, LoadingSpinner, PageHeader } from '../../../shared/ui';
 
 @Component({
   selector: 'app-patient-list',
-  imports: [RouterLink, FormsModule, DatePipe],
+  imports: [RouterLink, FormsModule, DatePipe, PageHeader, LoadingSpinner, EmptyState],
   templateUrl: './patient-list.html'
 })
 export class PatientList {

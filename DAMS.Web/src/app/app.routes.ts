@@ -1,6 +1,12 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
-import { roleGuard } from './core/guards/role.guard';
+import { PATIENT_ROUTES } from './features/patients/patients.routes';
+import { DOCTOR_ROUTES } from './features/doctors/doctors.routes';
+import { APPOINTMENT_ROUTES } from './features/appointments/appointments.routes';
+import { BED_ROUTES } from './features/beds/beds.routes';
+import { ADMISSION_ROUTES } from './features/admissions/admissions.routes';
+import { PRESCRIPTION_ROUTES } from './features/prescriptions/prescriptions.routes';
+import { INVOICE_ROUTES } from './features/invoices/invoices.routes';
 
 export const routes: Routes = [
   {
@@ -12,6 +18,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/register/register').then((m) => m.Register)
   },
   {
+    // Authenticated area — everything below renders inside the app shell.
     path: '',
     loadComponent: () => import('./shared/layout/shell').then((m) => m.Shell),
     canActivate: [authGuard],
@@ -20,100 +27,13 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard)
       },
-      {
-        path: 'patients',
-        canActivate: [roleGuard('Admin', 'Doctor', 'Receptionist')],
-        loadComponent: () => import('./features/patients/patient-list/patient-list').then((m) => m.PatientList)
-      },
-      {
-        path: 'patients/new',
-        canActivate: [roleGuard('Admin', 'Receptionist')],
-        loadComponent: () => import('./features/patients/patient-form/patient-form').then((m) => m.PatientForm)
-      },
-      {
-        path: 'patients/:id/edit',
-        canActivate: [roleGuard('Admin', 'Receptionist')],
-        loadComponent: () => import('./features/patients/patient-form/patient-form').then((m) => m.PatientForm)
-      },
-      {
-        path: 'my-profile',
-        canActivate: [roleGuard('Patient')],
-        loadComponent: () => import('./features/patients/my-profile/my-profile').then((m) => m.MyProfile)
-      },
-      {
-        path: 'doctors',
-        canActivate: [roleGuard('Admin', 'Doctor', 'Receptionist')],
-        loadComponent: () => import('./features/doctors/doctor-list/doctor-list').then((m) => m.DoctorList)
-      },
-      {
-        path: 'doctors/new',
-        canActivate: [roleGuard('Admin')],
-        loadComponent: () => import('./features/doctors/doctor-form/doctor-form').then((m) => m.DoctorForm)
-      },
-      {
-        path: 'doctors/:id/edit',
-        canActivate: [roleGuard('Admin')],
-        loadComponent: () => import('./features/doctors/doctor-form/doctor-form').then((m) => m.DoctorForm)
-      },
-      {
-        path: 'doctors/:id/schedules',
-        canActivate: [roleGuard('Admin', 'Doctor')],
-        loadComponent: () => import('./features/doctors/doctor-schedules/doctor-schedules').then((m) => m.DoctorSchedules)
-      },
-      {
-        path: 'appointments',
-        loadComponent: () => import('./features/appointments/appointment-list/appointment-list').then((m) => m.AppointmentList)
-      },
-      {
-        path: 'appointments/book',
-        canActivate: [roleGuard('Admin', 'Receptionist', 'Patient')],
-        loadComponent: () => import('./features/appointments/appointment-booking/appointment-booking').then((m) => m.AppointmentBooking)
-      },
-      {
-        path: 'beds',
-        canActivate: [roleGuard('Admin', 'Doctor', 'Receptionist')],
-        loadComponent: () => import('./features/beds/bed-availability/bed-availability').then((m) => m.BedAvailability)
-      },
-      {
-        path: 'admissions',
-        canActivate: [roleGuard('Admin', 'Doctor', 'Receptionist')],
-        loadComponent: () => import('./features/admissions/admission-list/admission-list').then((m) => m.AdmissionList)
-      },
-      {
-        path: 'admissions/admit',
-        canActivate: [roleGuard('Admin', 'Doctor', 'Receptionist')],
-        loadComponent: () => import('./features/admissions/admit-form/admit-form').then((m) => m.AdmitForm)
-      },
-      {
-        path: 'prescriptions',
-        canActivate: [roleGuard('Admin', 'Doctor', 'Patient')],
-        loadComponent: () => import('./features/prescriptions/prescription-list/prescription-list').then((m) => m.PrescriptionList)
-      },
-      {
-        path: 'prescriptions/new',
-        canActivate: [roleGuard('Doctor')],
-        loadComponent: () => import('./features/prescriptions/prescription-form/prescription-form').then((m) => m.PrescriptionForm)
-      },
-      {
-        path: 'prescriptions/:id',
-        canActivate: [roleGuard('Admin', 'Doctor', 'Patient')],
-        loadComponent: () => import('./features/prescriptions/prescription-detail/prescription-detail').then((m) => m.PrescriptionDetail)
-      },
-      {
-        path: 'invoices',
-        canActivate: [roleGuard('Admin', 'Receptionist', 'Patient')],
-        loadComponent: () => import('./features/invoices/invoice-list/invoice-list').then((m) => m.InvoiceList)
-      },
-      {
-        path: 'invoices/new',
-        canActivate: [roleGuard('Admin', 'Receptionist')],
-        loadComponent: () => import('./features/invoices/invoice-form/invoice-form').then((m) => m.InvoiceForm)
-      },
-      {
-        path: 'invoices/:id',
-        canActivate: [roleGuard('Admin', 'Receptionist', 'Patient')],
-        loadComponent: () => import('./features/invoices/invoice-detail/invoice-detail').then((m) => m.InvoiceDetail)
-      },
+      ...PATIENT_ROUTES,
+      ...DOCTOR_ROUTES,
+      ...APPOINTMENT_ROUTES,
+      ...BED_ROUTES,
+      ...ADMISSION_ROUTES,
+      ...PRESCRIPTION_ROUTES,
+      ...INVOICE_ROUTES,
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' }
     ]
   },

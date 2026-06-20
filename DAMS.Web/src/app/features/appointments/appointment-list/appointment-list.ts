@@ -5,10 +5,11 @@ import { AppointmentService } from '../../../core/services/appointment.service';
 import { InvoiceService } from '../../../core/services/invoice.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Appointment, AppointmentStatus } from '../../../core/models/appointment.model';
+import { EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../shared/ui';
 
 @Component({
   selector: 'app-appointment-list',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, PageHeader, LoadingSpinner, EmptyState, StatusBadge],
   templateUrl: './appointment-list.html'
 })
 export class AppointmentList {
@@ -53,15 +54,5 @@ export class AppointmentList {
       next: (inv) => this.router.navigate(['/invoices', inv.id]),
       error: (e) => this.error.set(e?.error?.message ?? 'Could not create invoice.')
     });
-  }
-
-  badgeClass(status: AppointmentStatus): string {
-    const map: Record<AppointmentStatus, string> = {
-      Booked: 'bg-primary',
-      Completed: 'bg-success',
-      Cancelled: 'bg-secondary',
-      NoShow: 'bg-danger'
-    };
-    return map[status];
   }
 }

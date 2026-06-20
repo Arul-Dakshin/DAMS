@@ -4,10 +4,11 @@ import { DatePipe } from '@angular/common';
 import { PrescriptionService } from '../../../core/services/prescription.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Prescription } from '../../../core/models/prescription.model';
+import { EmptyState, LoadingSpinner, PageHeader } from '../../../shared/ui';
 
 @Component({
   selector: 'app-prescription-list',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, PageHeader, LoadingSpinner, EmptyState],
   templateUrl: './prescription-list.html'
 })
 export class PrescriptionList {

@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { WardService } from '../../../core/services/ward.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Bed, BedStatus, Ward } from '../../../core/models/ward.model';
+import { EmptyState, LoadingSpinner, PageHeader } from '../../../shared/ui';
 
 @Component({
   selector: 'app-bed-availability',
-  imports: [FormsModule],
+  imports: [FormsModule, PageHeader, LoadingSpinner, EmptyState],
   templateUrl: './bed-availability.html',
   styleUrl: './bed-availability.css'
 })

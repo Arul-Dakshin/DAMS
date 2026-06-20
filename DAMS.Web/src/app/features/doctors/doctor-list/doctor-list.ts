@@ -4,10 +4,11 @@ import { CurrencyPipe } from '@angular/common';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Doctor } from '../../../core/models/doctor.model';
+import { EmptyState, LoadingSpinner, PageHeader } from '../../../shared/ui';
 
 @Component({
   selector: 'app-doctor-list',
-  imports: [RouterLink, CurrencyPipe],
+  imports: [RouterLink, CurrencyPipe, PageHeader, LoadingSpinner, EmptyState],
   templateUrl: './doctor-list.html'
 })
 export class DoctorList {

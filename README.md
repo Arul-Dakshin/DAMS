@@ -1,72 +1,105 @@
 # DAMS — Hospital Management System
 
-A full-stack hospital management system built with **ASP.NET Core 10**, **Angular 22**, and
-**Entity Framework Core**. It features role-based authentication, patient registration, OPD/IPD
-admissions with bed management, doctor scheduling & appointment booking, prescriptions &
-diagnosis records, billing & invoicing, and an analytics dashboard with live charts.
+A production-style, full-stack hospital management system built with **ASP.NET Core 10**,
+**Angular 22**, and **Entity Framework Core**. It covers the real workflows of a hospital —
+role-based access, patient registration, OPD/IPD admissions with bed management, doctor
+scheduling & appointment booking, prescriptions, billing & invoicing, and an analytics
+dashboard with live charts.
 
-> **Runs with zero database setup** — uses a file-based SQLite database that is created and
-> seeded automatically on first run.
+### 🔗 Live demo
+
+| | URL |
+|---|---|
+| **Web app** | **https://doctorsappointmentmanagement.netlify.app** |
+| **REST API (Swagger)** | **https://dams-api.onrender.com/swagger** |
+
+> Use a one-click demo account on the login page (e.g. **Admin** — `admin@dams.com` / `Admin@123`).
+> The API is on a free tier, so the **first request may take ~30–60s** to wake.
+
+---
 
 ## Tech stack
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | ASP.NET Core 10 Web API, Entity Framework Core 10 (Code-First) |
-| Frontend | Angular 22 (standalone components, signals), Bootstrap 5, Chart.js (ng2-charts) |
-| Database | SQLite (portable; swap the EF provider for SQL Server / PostgreSQL in production) |
-| Auth | JWT bearer tokens, BCrypt password hashing, role-based authorization |
+| **Frontend** | Angular 22 — standalone components, **signals**, reactive forms, lazy-loaded routes, Bootstrap 5, Chart.js (ng2-charts) |
+| **Backend** | ASP.NET Core 10 Web API — layered controllers → services → EF Core, Swagger/OpenAPI |
+| **Data** | Entity Framework Core 10 (Code-First, migrations), SQLite (provider-swappable to SQL Server / PostgreSQL) |
+| **Auth** | JWT bearer tokens, BCrypt password hashing, role-based authorization (4 roles) |
+| **DevOps** | Dockerised API on **Render**, SPA on **Netlify**, CI-on-push from GitHub |
 
-## Architecture
+## Features
+
+- 🔐 **Auth & roles** — JWT login + patient self-registration; four roles (Admin / Doctor /
+  Receptionist / Patient) enforced on **both** the API (`[Authorize(Roles=…)]`) and the Angular routes
+- 🧑‍⚕️ **Patients** — searchable registration & management; patients see their own profile
+- 👨‍⚕️ **Doctors & scheduling** — staff management and weekly availability
+- 📅 **Appointments** — slot generation from schedules, booking, **double-booking prevention**, status workflow
+- 🛏️ **OPD/IPD** — wards, beds, admit/discharge with **live bed availability**
+- 💊 **Prescriptions** — diagnosis + medicine records tied to an appointment
+- 🧾 **Billing** — invoices with line items, mark-as-paid, **printable receipts**, generate-from-visit
+- 📊 **Dashboard** — KPI cards, bed-availability widget, **revenue & appointment-status charts**
+- 📱 **Responsive** — desktop sidebar collapses to an off-canvas drawer on mobile
+
+## Solution architecture
 
 ```
 DAMS/
 ├─ DAMS.Core/    # Domain entities, enums, EF Core DbContext + migrations
-├─ DAMS.API/     # Web API: controllers, DTOs, services, JWT auth, seeding
-└─ DAMS.Web/     # Angular SPA: features, core (auth/guards/interceptors), shared layout
+├─ DAMS.API/     # Web API: controllers, DTOs, services, JWT auth, DB seeding
+└─ DAMS.Web/     # Angular SPA
 ```
 
-- **DAMS.Core** owns the data model and `DamsDbContext`.
-- **DAMS.API** exposes REST endpoints, issues JWTs, enforces role policies, and seeds demo data.
-- **DAMS.Web** is a standalone Angular app; a JWT interceptor attaches the token and route
-  guards enforce per-role access.
+**Backend** follows a clean **controller → service → DbContext** layering. Controllers stay thin;
+business logic (slot generation, double-booking checks, admit/discharge, invoice totals,
+dashboard aggregation) lives in injectable services; DTOs isolate the API contract from entities.
 
-## Features
+**Frontend** is organised by feature, with a clear separation of concerns:
 
-- 🔐 **Auth & roles** — JWT login, patient self-registration, four roles (Admin / Doctor /
-  Receptionist / Patient) enforced on both API and UI
-- 🧑‍⚕️ **Patients** — registration & management; patients view their own profile
-- 👨‍⚕️ **Doctors & scheduling** — staff management and weekly availability
-- 📅 **Appointments** — slot generation, booking, double-booking prevention, status workflow
-- 🛏️ **OPD/IPD** — wards, beds, admit/discharge with live bed availability
-- 💊 **Prescriptions** — diagnosis + medicine records per appointment
-- 🧾 **Billing** — invoices with line items, mark-as-paid, printable receipts, generate-from-visit
-- 📊 **Dashboard** — KPI cards, bed-availability widget, revenue & appointment-status charts
+```
+DAMS.Web/src/app/
+├─ core/                     # app-wide singletons
+│  ├─ models/                # typed interfaces (Patient, Appointment, …)
+│  ├─ services/              # HTTP data services (one per domain)
+│  ├─ guards/                # authGuard + roleGuard(...roles)
+│  └─ interceptors/          # jwt.interceptor (attach token), error.interceptor (401 → login)
+├─ features/                 # one folder per feature, each with its own *.routes.ts
+│  ├─ auth/  patients/  doctors/  appointments/
+│  ├─ beds/  admissions/  prescriptions/  invoices/  dashboard/
+└─ shared/
+   ├─ layout/                # app shell (responsive navbar + sidebar)
+   └─ ui/                    # reusable presentational components
+                            #   PageHeader · StatusBadge · LoadingSpinner · EmptyState
+```
 
-## Prerequisites
+### Angular patterns used
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download) — `winget install Microsoft.DotNet.SDK.10`
-- Node.js 20+ and Angular CLI 22 — `npm install -g @angular/cli`
+- **Standalone components** throughout (no NgModules) with **signals** for state and `input()` APIs
+- **Lazy loading** — every route uses `loadComponent`, and routes are split into **modular
+  per-feature route files** (`features/*/*.routes.ts`) composed in `app.routes.ts`
+- **Functional guards & interceptors** — `authGuard`, a parameterised `roleGuard('Admin', …)`,
+  a JWT interceptor and a global 401-handling error interceptor
+- **Reusable UI library** (`shared/ui`) — presentational components keep feature templates DRY
+- **Reactive forms** with validation; **environment-based** API config with production file replacement
 
-*(No database server required — SQLite is file-based.)*
+## Run it locally
 
-## Running locally
+**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) and Node.js 20+ with
+Angular CLI 22 (`npm i -g @angular/cli`). **No database server needed** — SQLite is file-based.
 
-**Backend** (http://localhost:5100, Swagger at `/swagger`)
 ```powershell
+# API  →  http://localhost:5100  (Swagger at /swagger)
 cd DAMS.API
-dotnet run
+dotnet run            # creates, migrates & seeds dams.db automatically
 ```
-The SQLite database (`dams.db`) is created, migrated, and seeded automatically on first run.
-
-**Frontend** (http://localhost:4200)
 ```bash
+# Web  →  http://localhost:4200
 cd DAMS.Web
 npm install
 ng serve
 ```
 
-## Seeded demo accounts
+### Seeded demo accounts
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -75,22 +108,16 @@ ng serve
 | Receptionist | `reception@dams.com` | `Reception@123` |
 | Patient | `patient@dams.com` | `Patient@123` |
 
-The login page has one-click buttons to fill these in. A seeded doctor (Dr. Alice Carter) has a
-Mon–Fri schedule, one patient is pre-registered, and two wards with beds are set up.
+## Deployment
 
-## Deployment (free)
-
-- **Frontend → Netlify** — `netlify.toml` is included (base `DAMS.Web`, publish
-  `dist/DAMS.Web/browser`, SPA redirect). Set `environment.prod.ts` `apiUrl` to your API URL.
-- **API → Render** — a `Dockerfile` and `render.yaml` blueprint are included; the app honors
-  Render's `PORT`. Optionally set `Jwt__Key` (strong secret) and `Cors__AllowedOrigins__0`
-  (your Netlify URL) as environment variables.
+- **API → Render** (Docker) — `Dockerfile` + `render.yaml` included; the app honours Render's
+  `PORT`. Production CORS allows the deployed origin; override `Jwt__Key` for a real secret.
+- **Web → Netlify** — `netlify.toml` builds `DAMS.Web` and publishes `dist/DAMS.Web/browser` with
+  an SPA fallback. Both redeploy automatically on every push to `main`.
 
 ## Notes
 
-- EF Core Code-First; migrations apply automatically at startup. Add a migration with:
-  ```powershell
-  dotnet ef migrations add <Name> --project DAMS.Core --startup-project DAMS.API
-  ```
-- For production, override the JWT signing key and restrict CORS via environment variables, and
-  consider switching the EF provider to SQL Server or PostgreSQL.
+- EF Core Code-First; migrations apply automatically on startup. Add one with
+  `dotnet ef migrations add <Name> --project DAMS.Core --startup-project DAMS.API`.
+- For a real deployment, set a strong `Jwt__Key`, restrict CORS to your domain, and swap the EF
+  provider to SQL Server or PostgreSQL (single line in `Program.cs`).

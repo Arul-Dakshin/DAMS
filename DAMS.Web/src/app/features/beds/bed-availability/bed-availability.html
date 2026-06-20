@@ -1,6 +1,4 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h4 class="fw-bold mb-0">Bed availability</h4>
-</div>
+<app-page-header title="Bed availability" subtitle="Wards, beds and live occupancy" />
 
 @if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
 
@@ -54,9 +52,9 @@
 }
 
 @if (loading()) {
-  <p class="text-muted">Loading…</p>
+  <app-loading-spinner message="Loading wards…" />
 } @else if (wards().length === 0) {
-  <p class="text-muted">No wards yet.</p>
+  <app-empty-state icon="bi-hospital" message="No wards yet." />
 } @else {
   <div class="row g-3">
     @for (w of wards(); track w.id) {

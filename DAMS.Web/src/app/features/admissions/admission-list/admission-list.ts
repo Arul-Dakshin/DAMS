@@ -2,11 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { AdmissionService } from '../../../core/services/admission.service';
-import { Admission, AdmissionStatus } from '../../../core/models/admission.model';
+import { Admission } from '../../../core/models/admission.model';
+import { EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../shared/ui';
 
 @Component({
   selector: 'app-admission-list',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, PageHeader, LoadingSpinner, EmptyState, StatusBadge],
   templateUrl: './admission-list.html'
 })
 export class AdmissionList {
@@ -40,9 +41,5 @@ export class AdmissionList {
       next: () => this.load(),
       error: (e) => this.error.set(e?.error?.message ?? 'Discharge failed.')
     });
-  }
-
-  badge(status: AdmissionStatus): string {
-    return status === 'Admitted' ? 'bg-primary' : 'bg-secondary';
   }
 }

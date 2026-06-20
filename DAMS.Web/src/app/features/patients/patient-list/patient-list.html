@@ -1,14 +1,10 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div>
-    <h4 class="fw-bold mb-0">Patients</h4>
-    <small class="text-muted">{{ patients().length }} record(s)</small>
-  </div>
+<app-page-header title="Patients" [subtitle]="patients().length + ' record(s)'">
   @if (canManage) {
     <a class="btn btn-primary" routerLink="/patients/new">
       <i class="bi bi-person-plus me-1"></i>Register patient
     </a>
   }
-</div>
+</app-page-header>
 
 <div class="input-group mb-3" style="max-width: 420px;">
   <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -21,26 +17,26 @@
   <div class="alert alert-danger">{{ error() }}</div>
 }
 
-<div class="card border-0 shadow-sm">
-  <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>#</th>
-          <th>Full name</th>
-          <th>Gender</th>
-          <th>Date of birth</th>
-          <th>Phone</th>
-          <th>Blood</th>
-          @if (canManage) { <th class="text-end">Actions</th> }
-        </tr>
-      </thead>
-      <tbody>
-        @if (loading()) {
-          <tr><td colspan="7" class="text-center text-muted py-4">Loading…</td></tr>
-        } @else if (patients().length === 0) {
-          <tr><td colspan="7" class="text-center text-muted py-4">No patients found.</td></tr>
-        } @else {
+@if (loading()) {
+  <app-loading-spinner message="Loading patients…" />
+} @else if (patients().length === 0) {
+  <app-empty-state icon="bi-people" message="No patients found." />
+} @else {
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Full name</th>
+            <th>Gender</th>
+            <th>Date of birth</th>
+            <th>Phone</th>
+            <th>Blood</th>
+            @if (canManage) { <th class="text-end">Actions</th> }
+          </tr>
+        </thead>
+        <tbody>
           @for (p of patients(); track p.id) {
             <tr>
               <td>{{ p.id }}</td>
@@ -62,8 +58,8 @@
               }
             </tr>
           }
-        }
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+}

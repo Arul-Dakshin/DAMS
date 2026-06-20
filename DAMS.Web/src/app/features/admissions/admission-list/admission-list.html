@@ -1,42 +1,38 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div>
-    <h4 class="fw-bold mb-0">Admissions (IPD)</h4>
-    <small class="text-muted">{{ admissions().length }} record(s)</small>
-  </div>
+<app-page-header title="Admissions (IPD)" [subtitle]="admissions().length + ' record(s)'">
   <a class="btn btn-primary" routerLink="/admissions/admit">
     <i class="bi bi-hospital me-1"></i>Admit patient
   </a>
-</div>
+</app-page-header>
 
 @if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
 
-<div class="card border-0 shadow-sm">
-  <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Patient</th>
-          <th>Ward / Bed</th>
-          <th>Admitted</th>
-          <th>Discharged</th>
-          <th>Status</th>
-          <th>Reason</th>
-          <th class="text-end">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @if (loading()) {
-          <tr><td colspan="7" class="text-center text-muted py-4">Loading…</td></tr>
-        } @else if (admissions().length === 0) {
-          <tr><td colspan="7" class="text-center text-muted py-4">No admissions yet.</td></tr>
-        } @else {
+@if (loading()) {
+  <app-loading-spinner message="Loading admissions…" />
+} @else if (admissions().length === 0) {
+  <app-empty-state icon="bi-clipboard2-pulse" message="No admissions yet." />
+} @else {
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Patient</th>
+            <th>Ward / Bed</th>
+            <th>Admitted</th>
+            <th>Discharged</th>
+            <th>Status</th>
+            <th>Reason</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
           @for (a of admissions(); track a.id) {
             <tr>
               <td class="fw-medium">{{ a.patientName }}</td>
               <td>{{ a.wardName }} <span class="text-muted">/ {{ a.bedNumber }}</span></td>
               <td>{{ a.admitDate | date: 'medium' }}</td>
               <td>{{ a.dischargeDate ? (a.dischargeDate | date: 'medium') : '—' }}</td>
-              <td><span class="badge {{ badge(a.status) }}">{{ a.status }}</span></td>
+              <td><app-status-badge [status]="a.status" /></td>
               <td>{{ a.reason || '—' }}</td>
               <td class="text-end">
                 @if (a.status === 'Admitted') {
@@ -49,8 +45,8 @@
               </td>
             </tr>
           }
-        }
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+}
